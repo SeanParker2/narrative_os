@@ -1,0 +1,63 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model RawText {
+  id          String   @id @default(uuid())
+  content     String
+  source      String
+  source_type String
+  timestamp   DateTime @default(now())
+
+  @@map("raw_text")
+}
+
+model NarrativeUnit {
+  id          String   @id @default(uuid())
+  raw_text_id String
+  title       String
+  summary     String
+  sentiment   String
+  entities    String // Stored as JSON or CSV
+  keywords    String // Stored as JSON or CSV
+  conflict    String?
+  source_type String
+  embedding   String? // Stored as JSON string of float array
+  timestamp   DateTime @default(now())
+
+  @@map("narrative_unit")
+}
+
+model NarrativeCluster {
+  id                String   @id @default(uuid())
+  name              String
+  description       String
+  unit_ids          String // Stored as JSON or CSV
+  report_content    String?  // Cached Deep Dive Report
+  report_updated_at DateTime? // Cache timestamp
+
+  @@map("narrative_cluster")
+}
+
+model NarrativeIndex {
+  id              String   @id @default(uuid())
+  cluster_id      String
+  strength        Float
+  sentiment_score Float
+  velocity        Float
+  media_coverage  Float
+  social_heat     Float
+  consistency     Float
+  lifecycle       String
+  timestamp       DateTime @default(now())
+
+  @@map("narrative_index")
+}
